@@ -19,6 +19,7 @@ state_print_parse = {
 class Board:
 
     def __init__(self, size=10):
+        self.size = size
         self.field = [
             [ShipPartState.NONE for _ in range(size)]
             for _ in range(size)
@@ -26,6 +27,11 @@ class Board:
 
     def place_ship(self, size: int, x: int, y: int, horizontal: bool):
         """Place a ship of `size` at (x,y) on the board"""
+        if not (0 <= x < self.size):
+            raise ValueError(f"x={x} is invalid, must be 0..{self.size-1}")
+        if not (0 <= y < self.size):
+            raise ValueError(f"y={y} is invalid, must be 0..{self.size-1}")
+
         if horizontal:
             for i in range(y, y+size):
                 self.field[x][i] = ShipPartState.SAFE
