@@ -1,12 +1,6 @@
 """Class for a board in a game of BattleShip"""
 
-from enum import Enum
-
-
-class ShipPartState:
-    NONE = 0
-    SAFE = 1
-    HIT = 2
+from .ship import Ship, ShipPartState
 
 
 state_print_parse = {
@@ -18,7 +12,10 @@ state_print_parse = {
 
 class Board:
 
-    def __init__(self, size=10):
+    def __init__(self, size: int=10):
+        if size < 3:
+            raise ValueError("The size of a board should be at least 3.")
+
         self.size = size
         self.field = [
             [ShipPartState.NONE for _ in range(size)]
@@ -32,16 +29,27 @@ class Board:
         if not (0 <= y < self.size):
             raise ValueError(f"y={y} is invalid, must be 0..{self.size-1}")
 
-        if horizontal:
-            for i in range(y, y+size):
-                self.field[x][i] = ShipPartState.SAFE
-        else:
-            for i in range(x, x+size):
-                self.field[i][y] = ShipPartState.SAFE
+        ship = Ship(size)
+
+        for i in range(size):
+            if horizontal:
+                self.field[x][y+i] = (ship, i)
+            else:
+                self.field[x+i][y] = (ship, i)
 
     def __str__(self):
         """Display the whole board as a grid with ./O/X for empty/safe/hit"""
-        return '\n'.join(
-            ''.join(state_print_parse[square] for square in row)
-            for row in self.field
-        )
+        display_rows = []
+
+        for row in self.field:
+            display_row = []
+            for square_state in row:
+
+                if isinstance(square_state, tuple):
+                    ship, i = square_state
+                    square_state = ship.parts[i]
+
+                display_row.append(state_print_parse[square_state])
+            display_rows.append(''.join(display_row))
+
+        return '\n'.join(display_rows)
