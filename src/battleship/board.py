@@ -1,6 +1,6 @@
 """Class for a board in a game of BattleShip"""
 
-from .ship import Ship, ShipPartState
+from .ship import Ship, ShipPartState, NONE_SHIP
 
 
 state_print_parse = {
@@ -18,7 +18,7 @@ class Board:
 
         self.size = size
         self.field = [
-            [ShipPartState.NONE for _ in range(size)]
+            [(NONE_SHIP, 0) for _ in range(size)]
             for _ in range(size)
         ]
 
@@ -30,7 +30,6 @@ class Board:
             raise ValueError(f"y={y} is invalid, must be 0..{self.size-1}")
 
         ship = Ship(size)
-
         for i in range(size):
             if horizontal:
                 self.field[x][y+i] = (ship, i)
@@ -39,17 +38,12 @@ class Board:
 
     def __str__(self):
         """Display the whole board as a grid with ./O/X for empty/safe/hit"""
-        display_rows = []
-
-        for row in self.field:
-            display_row = []
-            for square_state in row:
-
-                if isinstance(square_state, tuple):
-                    ship, i = square_state
-                    square_state = ship.parts[i]
-
-                display_row.append(state_print_parse[square_state])
-            display_rows.append(''.join(display_row))
-
-        return '\n'.join(display_rows)
+        return '\n'.join([
+            ''.join(
+                [
+                    state_print_parse[ship.parts[i]]
+                    for ship, i in row
+                ]
+            )
+            for row in self.field
+        ])
