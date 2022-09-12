@@ -1,6 +1,6 @@
 """Class for a board in a game of BattleShip"""
 
-from .ship import Ship, ShipPartState, NONE_SHIP
+from .ship import Ship, ShipOrientation, ShipPartState, NONE_SHIP
 
 
 state_print_parse = {
@@ -22,16 +22,16 @@ class Board:
             for _ in range(size)
         ]
 
-    def place_ship(self, size: int, x: int, y: int, horizontal: bool):
+    def place_ship(self, size: int, x: int, y: int, orientation: ShipOrientation):
         """Place a ship of `size` at (x,y) on the board"""
         if not (0 <= x < self.size):
             raise ValueError(f"x={x} is invalid, must be 0..{self.size-1}")
         if not (0 <= y < self.size):
             raise ValueError(f"y={y} is invalid, must be 0..{self.size-1}")
 
-        ship = Ship(size)
+        ship = Ship(size, orientation)
         for i in range(size):
-            if horizontal:
+            if orientation == ShipOrientation.HORIZONTAL:
                 self.field[x][y+i] = (ship, i)
             else:
                 self.field[x+i][y] = (ship, i)
