@@ -1,5 +1,7 @@
 from textwrap import dedent
 
+from pytest import raises
+
 from battleship.board import Board
 from battleship.ship import ShipOrientation
 
@@ -29,3 +31,27 @@ def test_str_place_hi():
             .O....O.O.
             ..........'''
         )
+
+def test_invalid_crossing_ships():
+    b = Board()
+    b.place_ship(4, 2, 1, ShipOrientation.HORIZONTAL)
+    with raises(ValueError):
+        b.place_ship(4, 1, 2, ShipOrientation.VERTICAL)
+
+def test_invalid_parallel_ships_horizontal():
+    b = Board()
+    b.place_ship(4, 2, 1, ShipOrientation.HORIZONTAL)
+    with raises(ValueError):
+        b.place_ship(4, 3, 1, ShipOrientation.HORIZONTAL)
+
+def test_invalid_parallel_ships_vertical():
+    b = Board()
+    b.place_ship(4, 2, 1, ShipOrientation.VERTICAL)
+    with raises(ValueError):
+        b.place_ship(4, 2, 2, ShipOrientation.VERTICAL)
+
+def test_invalid_on_edge_ships():
+    b = Board()
+    b.place_ship(4, 2, 1, ShipOrientation.HORIZONTAL)
+    with raises(ValueError):
+        b.place_ship(4, 1, 5, ShipOrientation.VERTICAL)
