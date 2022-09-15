@@ -3,7 +3,7 @@ from textwrap import dedent
 from pytest import raises
 
 from battleship.board import Board
-from battleship.ship import ShipOrientation
+from battleship.ship import ShipOrientation, ShipPartState
 
 
 def test_str_empty_board():
@@ -16,6 +16,8 @@ def test_str_place_hi():
     b.place_ship(8, 1, 1, ShipOrientation.VERTICAL)
     b.place_ship(8, 1, 6, ShipOrientation.VERTICAL)
     b.place_ship(2, 5, 3, ShipOrientation.HORIZONTAL)
+    b.shoot(5, 3)
+    b.shoot(5, 4)
     b.place_ship(2, 1, 8, ShipOrientation.VERTICAL)
     b.place_ship(5, 4, 8, ShipOrientation.VERTICAL)
     assert str(b) == dedent(
@@ -25,7 +27,7 @@ def test_str_place_hi():
             .O....O.O.
             .O....O...
             .O....O.O.
-            .O.OO.O.O.
+            .O.SS.O.O.
             .O....O.O.
             .O....O.O.
             .O....O.O.
@@ -85,3 +87,19 @@ def test_invalid_args_too_long_vertical():
     b = Board(10)
     with raises(ValueError):
         b.place_ship(10, 1, 1, ShipOrientation.VERTICAL)
+
+def test_shoot_empty():
+    b = Board()
+    assert b.shoot(0, 0) == ShipPartState.NONE
+
+def test_shoot_ship():
+    b = Board()
+    b.place_ship(3, 1, 1, ShipOrientation.HORIZONTAL)
+    assert b.shoot(1, 1) == ShipPartState.HIT
+
+def test_sink_ship():
+    b = Board()
+    b.place_ship(3, 1, 1, ShipOrientation.HORIZONTAL)
+    b.shoot(1, 1)
+    b.shoot(1, 2)
+    assert b.shoot(1, 3) == ShipPartState.SUNK

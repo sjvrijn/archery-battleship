@@ -9,6 +9,7 @@ state_print_parse = {
     ShipPartState.NONE: '.',
     ShipPartState.SAFE: 'O',
     ShipPartState.HIT: 'X',
+    ShipPartState.SUNK: 'S',
 }
 
 
@@ -71,6 +72,19 @@ class Board:
                 print(r, c)
                 return False
         return True  # Placement is valid if no conflict was found
+
+    def shoot(self, row: int, col: int) -> ShipPartState:
+        """Shoot a location on the board and report the result"""
+        if not (0 <= row < self.size):
+            raise ValueError(f"row={row} is invalid, must be 0..{self.size-1}")
+        if not (0 <= col < self.size):
+            raise ValueError(f"col={col} is invalid, must be 0..{self.size-1}")
+
+        s, i = self.field[row][col]
+        if s is NONE_SHIP:
+            return ShipPartState.NONE
+        s.hit(i)
+        return s.parts[i]
 
     def __str__(self):
         """Display the whole board as a grid with ./O/X for empty/safe/hit"""
