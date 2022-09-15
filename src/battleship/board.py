@@ -26,11 +26,7 @@ class Board:
 
     def place_ship(self, size: int, row: int, col: int, orientation: ShipOrientation):
         """Place a ship of `size` at (row,col) on the board"""
-        if not (0 <= row < self.size):
-            raise ValueError(f"row={row} is invalid, must be 0..{self.size-1}")
-        if not (0 <= col < self.size):
-            raise ValueError(f"col={col} is invalid, must be 0..{self.size-1}")
-
+        self.check_valid_placement_args(size, row, col, orientation)
         if not self.check_non_blocking(size, row, col, orientation):
             raise ValueError('Cannot place ship here, is blocked by another already present')
 
@@ -40,6 +36,21 @@ class Board:
                 self.field[row][col+i] = (ship, i)
             else:
                 self.field[row+i][col] = (ship, i)
+
+    def check_valid_placement_args(self, size: int, row: int, col: int, orientation: ShipOrientation):
+        """Check validity of arguments: does everything fit in the board?"""
+        if not (0 <= row < self.size):
+            raise ValueError(f"row={row} is invalid, must be 0..{self.size-1}")
+        if not (0 <= col < self.size):
+            raise ValueError(f"col={col} is invalid, must be 0..{self.size-1}")
+
+        orientations = [ShipOrientation.HORIZONTAL, ShipOrientation.VERTICAL]
+        if orientation not in orientations:
+            raise ValueError(f"orientation={orientation} is invalid, must be any of {orientations}")
+
+        end = col + size if orientation == ShipOrientation.HORIZONTAL else row + size
+        if end >= self.size:
+            raise ValueError("ship is too long for this location")
 
     def check_non_blocking(self, size: int, row: int, col: int, orientation: ShipOrientation):
         """Check if all cells around intended location are free"""

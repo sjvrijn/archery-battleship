@@ -55,3 +55,33 @@ def test_invalid_on_edge_ships():
     b.place_ship(4, 2, 1, ShipOrientation.HORIZONTAL)
     with raises(ValueError):
         b.place_ship(4, 1, 5, ShipOrientation.VERTICAL)
+
+def test_invalid_args_small_row():
+    b = Board()
+    with raises(ValueError):
+        b.place_ship(1, -1, 1, ShipOrientation.HORIZONTAL)
+
+def test_invalid_args_small_col():
+    b = Board()
+    with raises(ValueError):
+        b.place_ship(1, 1, -1, ShipOrientation.HORIZONTAL)
+
+def test_invalid_args_large_row():
+    b = Board(10)
+    with raises(ValueError):
+        b.place_ship(1, 11, 1, ShipOrientation.HORIZONTAL)
+
+def test_invalid_args_large_col():
+    b = Board(10)
+    with raises(ValueError):
+        b.place_ship(1, 1, 11, ShipOrientation.HORIZONTAL)
+
+def test_invalid_args_too_long_horizontal():
+    b = Board(10)
+    with raises(ValueError):
+        b.place_ship(10, 1, 1, ShipOrientation.HORIZONTAL)
+
+def test_invalid_args_too_long_vertical():
+    b = Board(10)
+    with raises(ValueError):
+        b.place_ship(10, 1, 1, ShipOrientation.VERTICAL)
