@@ -22,19 +22,19 @@ class Board:
             for _ in range(size)
         ]
 
-    def place_ship(self, size: int, x: int, y: int, orientation: ShipOrientation):
-        """Place a ship of `size` at (x,y) on the board"""
-        if not (0 <= x < self.size):
-            raise ValueError(f"x={x} is invalid, must be 0..{self.size-1}")
-        if not (0 <= y < self.size):
-            raise ValueError(f"y={y} is invalid, must be 0..{self.size-1}")
+    def place_ship(self, size: int, row: int, col: int, orientation: ShipOrientation):
+        """Place a ship of `size` at (row,col) on the board"""
+        if not (0 <= row < self.size):
+            raise ValueError(f"row={row} is invalid, must be 0..{self.size-1}")
+        if not (0 <= col < self.size):
+            raise ValueError(f"col={col} is invalid, must be 0..{self.size-1}")
 
         ship = Ship(size, orientation)
         for i in range(size):
             if orientation == ShipOrientation.HORIZONTAL:
-                self.field[x][y+i] = (ship, i)
+                self.field[row][col+i] = (ship, i)
             else:
-                self.field[x+i][y] = (ship, i)
+                self.field[row+i][col] = (ship, i)
 
     def __str__(self):
         """Display the whole board as a grid with ./O/X for empty/safe/hit"""
