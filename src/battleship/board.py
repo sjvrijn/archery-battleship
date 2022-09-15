@@ -5,9 +5,15 @@ from itertools import product
 from .ship import Ship, ShipOrientation, ShipPartState, NONE_SHIP
 
 
-state_print_parse = {
+state_print_parse_private = {
     ShipPartState.NONE: '.',
     ShipPartState.SAFE: 'O',
+    ShipPartState.HIT: 'X',
+    ShipPartState.SUNK: 'S',
+}
+state_print_parse_public = {
+    ShipPartState.NONE: '.',
+    ShipPartState.SAFE: '.',
     ShipPartState.HIT: 'X',
     ShipPartState.SUNK: 'S',
 }
@@ -92,11 +98,15 @@ class Board:
         return all(s.sunk for s in self.ships)
 
     def __str__(self):
+        return self.display(public=False)
+
+    def display(self, public: bool=True):
         """Display the whole board as a grid with ./O/X for empty/safe/hit"""
+        parse_dict = state_print_parse_public if public else state_print_parse_private
         return '\n'.join([
             ''.join(
                 [
-                    state_print_parse[ship.parts[i]]
+                    parse_dict[ship.parts[i]]
                     for ship, i in row
                 ]
             )

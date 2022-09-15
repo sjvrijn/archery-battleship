@@ -19,18 +19,35 @@ def test_str_place_hi():
     b.shoot(5, 3)
     b.shoot(5, 4)
     b.place_ship(2, 1, 8, ShipOrientation.VERTICAL)
+    b.shoot(1, 8)
     b.place_ship(5, 4, 8, ShipOrientation.VERTICAL)
+    b.shoot(4, 8)
+    b.shoot(6, 8)
+    b.shoot(8, 8)
     assert str(b) == dedent(
             '''\
             ..........
-            .O....O.O.
+            .O....O.X.
             .O....O.O.
             .O....O...
-            .O....O.O.
+            .O....O.X.
             .O.SS.O.O.
+            .O....O.X.
             .O....O.O.
-            .O....O.O.
-            .O....O.O.
+            .O....O.X.
+            ..........'''
+        )
+    assert b.display() == dedent(
+            '''\
+            ..........
+            ........X.
+            ..........
+            ..........
+            ........X.
+            ...SS.....
+            ........X.
+            ..........
+            ........X.
             ..........'''
         )
 
