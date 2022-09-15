@@ -103,3 +103,27 @@ def test_sink_ship():
     b.shoot(1, 1)
     b.shoot(1, 2)
     assert b.shoot(1, 3) == ShipPartState.SUNK
+
+def test_fleet_sunk_single_ship():
+    b = Board()
+    b.place_ship(3, 1, 1, ShipOrientation.HORIZONTAL)
+    b.shoot(1, 1)
+    b.shoot(1, 2)
+    b.shoot(1, 3)
+    assert b.fleet_sunk()
+
+def test_fleet_sunk_multiple_ships():
+    ship_rows = (1, 3, 5)
+    ship_col = 1
+    ship_length = 3
+
+    b = Board()
+    for row in ship_rows:
+        b.place_ship(ship_length, row, ship_col, ShipOrientation.HORIZONTAL)
+    for row in ship_rows:
+        assert not b.fleet_sunk()
+        for i in range(ship_length):
+            b.shoot(row, ship_col+i)
+
+    # fleet should only be sank after all ships are sank
+    assert b.fleet_sunk()

@@ -24,6 +24,7 @@ class Board:
             [(NONE_SHIP, 0) for _ in range(size)]
             for _ in range(size)
         ]
+        self.ships = []
 
     def place_ship(self, size: int, row: int, col: int, orientation: ShipOrientation):
         """Place a ship of `size` at (row,col) on the board"""
@@ -32,6 +33,7 @@ class Board:
             raise ValueError('Cannot place ship here, is blocked by another already present')
 
         ship = Ship(size, orientation)
+        self.ships.append(ship)
         for i in range(size):
             if orientation == ShipOrientation.HORIZONTAL:
                 self.field[row][col+i] = (ship, i)
@@ -85,6 +87,9 @@ class Board:
             return ShipPartState.NONE
         s.hit(i)
         return s.parts[i]
+
+    def fleet_sunk(self):
+        return all(s.sunk for s in self.ships)
 
     def __str__(self):
         """Display the whole board as a grid with ./O/X for empty/safe/hit"""
