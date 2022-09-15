@@ -8,6 +8,7 @@ class ShipPartState(IntEnum):
     NONE = 0
     SAFE = 1
     HIT = 2
+    SUNK = 3
 
 
 class ShipOrientation(IntEnum):
@@ -20,9 +21,17 @@ class Ship:
     def __init__(self, size: int, orientation: ShipOrientation):
         self.parts = [ShipPartState.SAFE for _ in range(size)]
         self.orientation = orientation
+        self.sunk = False
 
-    def hit(i: int):
+    @property
+    def size(self):
+        return len(self.parts)
+
+    def hit(self, i: int):
         self.parts[i] = ShipPartState.HIT
+        if all(p == ShipPartState.HIT for p in self.parts):
+            self.parts = [ShipPartState.SUNK for _ in range(self.size)]
+            self.sunk = True
 
 
 # Define an 'empty' ship to serve as an empty square
