@@ -42,6 +42,78 @@ def simulate_random_strategy(fleet: Sequence[int]) -> int:
         if b.fleet_sunk():
             return move
 
+def simulate_random_with_search_strategy(fleet: Sequence[int]) -> int:
+    """Simulate a strategy of shooting randomly, but searching logically on a hit to sink a ship"""
+    b = Board()
+    b.place_random_fleet(fleet)
+
+    shots = list(product(range(b.size), range(b.size)))
+    shuffle(shots)
+    # shots = set(shots)
+
+    state = 'exploring'
+
+    for move in count(1):
+
+        if state == 'exploring':
+            r, c = shots.pop()
+            result = b.shoot(r,c)
+            if result == ShipPartState.HIT:
+                state = 'exploiting'
+                ship_core = r,c
+                next_direction = (1,0)
+                next_shot = r+1, c
+
+        elif state == 'exploiting':
+            while next_shot not in shots:
+                next_shot, next_direction = select_next_shot(b, ship_core, next_direction)
+
+            shots.remove(next_shot)
+            result = b.shoot(*next_shot)
+            if result == ShipPartState.MISS:
+                next_direction = select_next_direction(next_direction)
+            elif result == ShipPartState.SUNK:
+                state = 'exploring'
+
+        if b.fleet_sunk():
+            return move
+
+def select_next_shot(board, ship_core, current_direction):
+    dr, dc = current_direction
+
+    # construct next shot
+    r, c = ship_core[0]+dr, ship_core[1]+dc
+
+    # if shot falls out of board, move to next direction and reconstruct shot
+    while r < 0 or r >= board.size or c < 0 or c >= board.size:
+        (dr, dc) = select_next_direction((dr, dc))
+        r, c = ship_core[0]+dr, ship_core[1]+dc
+
+    # Move forward in current direction
+    if dr > 0:
+        dr += 1
+    elif dr < 0:
+        dr -= 1
+    elif dc > 0:
+        dc += 1
+    elif dc < 0:
+        dc -= 1
+
+    return (r, c), (dr, dc)
+
+def select_next_direction(direction: tuple[int]) -> tuple[int]:
+    """Change direction in following order: (1,0) -> (0,1) -> (-1,0) -> (0,-1)"""
+    dr, dc = direction
+    if dr > 0:
+        dr, dc = 0, 1
+    elif dc > 0:
+        dr, dc = -1, 0
+    elif dr < 0:
+        dr, dc = 0, -1
+    else:
+        raise ValueError("All directions tried")
+    return dr, dc
+
 
 if __name__ == "__main__":
 
