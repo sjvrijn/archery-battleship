@@ -144,3 +144,10 @@ def test_fleet_sunk_multiple_ships():
 
     # fleet should only be sank after all ships are sank
     assert b.fleet_sunk()
+
+def test_place_ship_regression_bottom_edge():
+    """Checks ship placment on edge: gave 'too long' error"""
+    b = Board()
+    b.place_ship(1, 9, 3, 1)
+    with raises(ValueError):
+        b.place_ship(1, 8, 3, 1)

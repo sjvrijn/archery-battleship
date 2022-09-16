@@ -57,7 +57,7 @@ class Board:
         if orientation not in orientations:
             raise ValueError(f"orientation={orientation} is invalid, must be any of {orientations}")
 
-        end = col + size if orientation == ShipOrientation.HORIZONTAL else row + size
+        end = col + (size-1) if orientation == ShipOrientation.HORIZONTAL else row + (size-1)
         if end >= self.size:
             raise ValueError("ship is too long for this location")
 
@@ -77,7 +77,6 @@ class Board:
 
         for r, c in product(range(startrow, endrow), range(startcol, endcol)):
             if self.field[r][c][0] is not NONE_SHIP:
-                print(r, c)
                 return False
         return True  # Placement is valid if no conflict was found
 
