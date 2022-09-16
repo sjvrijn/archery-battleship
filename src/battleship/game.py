@@ -11,7 +11,7 @@ def play_1p_game():
     b = Board()
     print("what fleet should be placed?")
     fleet_str = input()
-    fleet = map(int, fleet_str.strip('\n').split(','))
+    fleet = list(map(int, fleet_str.strip('\n').split(',')))
     b.place_random_fleet(fleet)
 
     num_sunk = 0
@@ -25,7 +25,7 @@ def play_1p_game():
         result = b.shoot(row, col)
         if result == ShipPartState.SUNK:
             num_sunk += 1
-            print(f"Another ship sunk, {n-num_sunk} left.")
+            print(f"Another ship sunk, {len(fleet)-num_sunk} left.")
 
         if b.fleet_sunk():
             print(f"Victory! Fleet sunk in {move} moves")

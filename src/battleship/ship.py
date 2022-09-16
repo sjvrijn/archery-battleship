@@ -9,6 +9,7 @@ class ShipPartState(IntEnum):
     SAFE = 1
     HIT = 2
     SUNK = 3
+    MISS = 4
 
 
 class ShipOrientation(IntEnum):
@@ -37,3 +38,7 @@ class Ship:
 # Define an 'empty' ship to serve as an empty square
 NONE_SHIP = Ship(1, ShipOrientation.HORIZONTAL)
 NONE_SHIP.parts[0] = ShipPartState.NONE
+
+# Define a 'miss' ship to serve as a tracker for missed shots
+MISS_SHIP = Ship(1, ShipOrientation.HORIZONTAL)
+MISS_SHIP.parts[0] = ShipPartState.MISS

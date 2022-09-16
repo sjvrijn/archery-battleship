@@ -3,7 +3,7 @@
 from itertools import product
 from random import randrange
 
-from .ship import Ship, ShipOrientation, ShipPartState, NONE_SHIP
+from .ship import Ship, ShipOrientation, ShipPartState, NONE_SHIP, MISS_SHIP
 
 
 state_print_parse_private = {
@@ -11,12 +11,14 @@ state_print_parse_private = {
     ShipPartState.SAFE: 'O',
     ShipPartState.HIT: 'X',
     ShipPartState.SUNK: 'S',
+    ShipPartState.MISS: '.',
 }
 state_print_parse_public = {
     ShipPartState.NONE: '.',
     ShipPartState.SAFE: '.',
     ShipPartState.HIT: 'X',
     ShipPartState.SUNK: 'S',
+    ShipPartState.MISS: 'M',
 }
 
 
@@ -92,7 +94,8 @@ class Board:
 
         s, i = self.field[row][col]
         if s is NONE_SHIP:
-            return ShipPartState.NONE
+            self.field[row][col] = (MISS_SHIP, 0)
+            return ShipPartState.MISS
         s.hit(i)
         return s.parts[i]
 
