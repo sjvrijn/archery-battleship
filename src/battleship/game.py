@@ -17,7 +17,6 @@ def play_1p_game():
     else:
         b.place_random_fleet()
 
-    num_sunk = 0
     for move in count(1):
         print(b.display(public=True))
 
@@ -27,11 +26,12 @@ def play_1p_game():
             row -= 32  # a..j instead of A..J
         result = b.shoot(row, col)
         if result == ShipPartState.SUNK:
-            num_sunk += 1
-            print(f"Another ship sunk, {len(fleet)-num_sunk} left.")
+            num_sunk = sum(s.sunk for s in b.ships)
+            print(f"Another ship sunk, {len(b.ships)-num_sunk} left.")
 
         if b.fleet_sunk():
             print(f"Victory! Fleet sunk in {move} moves")
+            print(b.display(public=True))
             break
 
 
