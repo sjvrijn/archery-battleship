@@ -93,7 +93,7 @@ class Board:
             raise ValueError(f"col={col} is invalid, must be 0..{self.size-1}")
 
         s, i = self.field[row][col]
-        if s is NONE_SHIP:
+        if s is NONE_SHIP or s is MISS_SHIP:
             self.field[row][col] = (MISS_SHIP, 0)
             return ShipPartState.MISS
         s.hit(i)

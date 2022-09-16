@@ -3,7 +3,7 @@ from textwrap import dedent
 from pytest import raises
 
 from battleship.board import Board
-from battleship.ship import ShipOrientation, ShipPartState
+from battleship.ship import ShipOrientation, ShipPartState, MISS_SHIP
 
 
 def test_str_empty_board():
@@ -107,7 +107,7 @@ def test_invalid_args_too_long_vertical():
 
 def test_shoot_empty():
     b = Board()
-    assert b.shoot(0, 0) == ShipPartState.NONE
+    assert b.shoot(0, 0) == ShipPartState.MISS
 
 def test_shoot_ship():
     b = Board()
@@ -176,3 +176,10 @@ def test_place_random_impossible_fleet():
     b = Board(4)
     with raises(ValueError):
         b.place_random_fleet([5])
+
+def test_miss_same_square_idempotent():
+    """Missing on the same spot should not change the 'miss' ship properties"""
+    b = Board()
+    b.shoot(0,0)
+    b.shoot(0,0)
+    assert MISS_SHIP.parts[0] == ShipPartState.MISS
