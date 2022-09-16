@@ -18,7 +18,10 @@ def play_1p_game():
     for move in count(1):
         print(b.display(public=True))
 
-        row, col = int(input("row? ")), int(input("col? "))
+        coord = input('Where do you shoot? [A0 ... J9] ')
+        row, col = ord(coord[0])-65, int(coord[1])
+        if row > 10:
+            row -= 32  # a..j instead of A..J
         result = b.shoot(row, col)
         if result == ShipPartState.SUNK:
             num_sunk += 1
