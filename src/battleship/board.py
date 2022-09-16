@@ -1,6 +1,7 @@
 """Class for a board in a game of BattleShip"""
 
 from itertools import product
+from random import randrange
 
 from .ship import Ship, ShipOrientation, ShipPartState, NONE_SHIP
 
@@ -94,6 +95,22 @@ class Board:
             return ShipPartState.NONE
         s.hit(i)
         return s.parts[i]
+
+    def place_random_fleet(self, fleet_size: tuple[int]=(5, 4,4, 3,3,3, 2,2,2,2), num_tries: int=1_000):
+        """Randomly try to place a fleet of given sizes on the board"""
+        sizes = list(fleet_size) + [None]  # Add None as terminal value
+        size = sizes.pop(0)
+        for _ in range(num_tries):
+            row, col, orientation = randrange(self.size), randrange(self.size), randrange(2)
+            try:
+                self.place_ship(size, row, col, orientation)
+            except ValueError:  # todo: further specify into exact 'battleship'-error
+                continue
+            size = sizes.pop(0)
+            if size is None:
+                break
+        if sizes:
+            raise ValueError(f"Unable to place fleet {fleet_size} in {num_tries} tries.")
 
     def fleet_sunk(self):
         return all(s.sunk for s in self.ships)

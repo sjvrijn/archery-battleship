@@ -163,3 +163,16 @@ def test_place_ships_regression_bottom_edge_horizontal():
     b.place_ship(1, 9, 3, 0)
     with raises(ValueError):
         b.place_ship(1, 8, 3, 0)
+
+def test_place_random_fleet():
+    """A default fleet (1x5, 2x4, 3x3, 4x2) should fit in the default board (10x10)"""
+    b = Board(10)
+    default_fleet = [5, 4,4, 3,3,3, 2,2,2,2]
+    b.place_random_fleet(default_fleet)
+    assert len(b.ships) == len(default_fleet)
+
+def test_place_random_impossible_fleet():
+    """An error should be raised (eventually) when trying to place an impossible fleet"""
+    b = Board(4)
+    with raises(ValueError):
+        b.place_random_fleet([5])
