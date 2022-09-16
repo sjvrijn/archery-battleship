@@ -126,19 +126,26 @@ if __name__ == "__main__":
 
     # play_1p_game(fleet)
 
-    num_games = 1_000
-    durations = []
-    for _ in range(num_games):
-        try:
-            num_moves = simulate_random_strategy(fleet)
-        except ValueError:
-            num_games -= 1
-            continue
-        durations.append(num_moves)
-    durations.sort()
+    strategies = {
+        'random': simulate_random_strategy,
+        'random with search': simulate_random_with_search_strategy,
+    }
 
-    q1, q2, q3 = durations[num_games//4], durations[num_games//2], durations[3*(num_games//4)]
-    avg = sum(durations) / num_games
+    for name, strategy in strategies.items():
 
-    print(f"An average random game ({num_games} tries) takes {avg:.2f} moves.")
-    print(f"    quantiles: [{min(durations)}, {q1}, {q2}, {q3}, {max(durations)}]")
+        num_games = 1_000
+        durations = []
+        for _ in range(num_games):
+            try:
+                num_moves = strategy(fleet)
+            except ValueError:
+                num_games -= 1
+                continue
+            durations.append(num_moves)
+        durations.sort()
+
+        q1, q2, q3 = durations[num_games//4], durations[num_games//2], durations[3*(num_games//4)]
+        avg = sum(durations) / num_games
+
+        print(f"An average {name} game ({num_games} tries) takes {avg:.2f} moves.")
+        print(f"    quantiles: [{min(durations)}, {q1}, {q2}, {q3}, {max(durations)}]")
