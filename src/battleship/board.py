@@ -2,6 +2,7 @@
 
 from itertools import product
 from random import randrange
+from typing import Sequence
 
 from .ship import Ship, ShipOrientation, ShipPartState, NONE_SHIP, MISS_SHIP
 
@@ -23,6 +24,8 @@ state_print_parse_public = {
 
 
 class Board:
+
+    _default_fleet = (5, 4,4, 3,3,3, 2,2,2,2)
 
     def __init__(self, size: int=10):
         if size < 3:
@@ -99,8 +102,10 @@ class Board:
         s.hit(i)
         return s.parts[i]
 
-    def place_random_fleet(self, fleet_size: tuple[int]=(5, 4,4, 3,3,3, 2,2,2,2), num_tries: int=1_000):
+    def place_random_fleet(self, fleet_size: Sequence[int]=None, num_tries: int=1_000):
         """Randomly try to place a fleet of given sizes on the board"""
+        if not fleet_size:
+            fleet_size = self._default_fleet
         sizes = list(fleet_size) + [None]  # Add None as terminal value
         size = sizes.pop(0)
         for _ in range(num_tries):
