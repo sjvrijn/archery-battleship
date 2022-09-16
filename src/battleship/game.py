@@ -37,7 +37,7 @@ def simulate_random_strategy(fleet: Sequence[int]) -> int:
 
     shots = list(product(range(b.size), range(b.size)))
     shuffle(shots)
-    for move, (r,c) in enumerate(shots):
+    for move, (r,c) in enumerate(shots, start=1):
         b.shoot(r,c)
         if b.fleet_sunk():
             return move
@@ -53,4 +53,20 @@ if __name__ == "__main__":
         fleet = None
 
     # play_1p_game(fleet)
-    print(f"random game for fleet took {simulate_random_strategy(fleet)} moves")
+
+    num_games = 1_000
+    durations = []
+    for _ in range(num_games):
+        try:
+            num_moves = simulate_random_strategy(fleet)
+        except ValueError:
+            num_games -= 1
+            continue
+        durations.append(num_moves)
+    durations.sort()
+
+    q1, q2, q3 = durations[num_games//4], durations[num_games//2], durations[3*(num_games//4)]
+    avg = sum(durations) / num_games
+
+    print(f"An average random game ({num_games} tries) takes {avg:.2f} moves.")
+    print(f"    quantiles: [{min(durations)}, {q1}, {q2}, {q3}, {max(durations)}]")
