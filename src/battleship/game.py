@@ -7,12 +7,15 @@ from battleship.ship import ShipPartState
 
 
 def play_1p_game():
-    """Play a '1p' game: place the boats and sink them in the fewest moves"""
+    """Play a '1p' game: sink a randomly placed fleet in the fewest moves"""
     b = Board()
-    print("what fleet should be placed?")
+    print("what fleet should be placed? (leave empty for default)")
     fleet_str = input()
-    fleet = list(map(int, fleet_str.strip('\n').split(',')))
-    b.place_random_fleet(fleet)
+    if fleet_str:
+        fleet = list(map(int, fleet_str.strip('\n').split(',')))
+        b.place_random_fleet(fleet)
+    else:
+        b.place_random_fleet()
 
     num_sunk = 0
     for move in count(1):
