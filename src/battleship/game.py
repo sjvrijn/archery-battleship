@@ -9,19 +9,10 @@ from battleship.ship import ShipPartState
 def play_1p_game():
     """Play a '1p' game: place the boats and sink them in the fewest moves"""
     b = Board()
-    n = int(input("How many ships? "))
-
-    for i in range(n):
-        print(f"Ship #{i+1}:")
-        size = int(input("size? "))
-        row = int(input("row? "))
-        col = int(input("column? "))
-        orientation = int(input("horizontal (0) or vertical (1)? "))
-
-        b.place_ship(size, row, col, orientation)
-        print("")
-        print(b.display(public=False))
-        print("")
+    print("what fleet should be placed?")
+    fleet_str = input()
+    fleet = map(int, fleet_str.strip('\n').split(','))
+    b.place_random_fleet(fleet)
 
     num_sunk = 0
     for move in count(1):
