@@ -65,10 +65,12 @@ class Board:
         """Check if all cells around intended location are free"""
         startrow = row-1 if row > 0 else row
         startcol = col-1 if col > 0 else col
+
+        # Since 'size' always adds at least 1 already, add 2 when not adding 'size'
         if orientation == ShipOrientation.HORIZONTAL:
-            endrow, endcol = row+1, col+size+1
+            endrow, endcol = row+2, col+size+1
         else:
-            endrow, endcol = row+size+1, col+1
+            endrow, endcol = row+size+1, col+2
 
         if endrow >= self.size:
             endrow = self.size

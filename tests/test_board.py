@@ -149,5 +149,17 @@ def test_place_ship_regression_bottom_edge():
     """Checks ship placment on edge: gave 'too long' error"""
     b = Board()
     b.place_ship(1, 9, 3, 1)
+
+def test_place_ships_regression_right_edge_vertical():
+    """Ship in column 8 was not blocked by one already present in column 9, if vertical"""
+    b = Board()
+    b.place_ship(1, 3, 9, 1)
     with raises(ValueError):
-        b.place_ship(1, 8, 3, 1)
+        b.place_ship(1, 3, 8, 1)
+
+def test_place_ships_regression_bottom_edge_horizontal():
+    """Ship in row 8 was not blocked by one already present in row 9, if horizontal"""
+    b = Board()
+    b.place_ship(1, 9, 3, 0)
+    with raises(ValueError):
+        b.place_ship(1, 8, 3, 0)
