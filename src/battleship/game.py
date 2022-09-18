@@ -76,6 +76,43 @@ def simulate_random_with_search_strategy(fleet: Sequence[int]) -> int:
         if b.fleet_sunk():
             return move
 
+def simulate_filtered_random_with_search_strategy(fleet: Sequence[int]) -> int:
+    """Simulate a strategy of shooting randomly, but searching logically on a hit to sink a ship"""
+    b = Board()
+    b.place_random_fleet(fleet)
+
+    shots = [(r,c) for r,c in product(range(b.size), range(b.size)) if (r+c)%2 == 1]
+    shuffle(shots)
+
+    state = 'exploring'
+
+    for move in count(1):
+
+        if state == 'exploring':
+            next_shot = shots.pop()
+            result = b.shoot(*next_shot)
+            if result == ShipPartState.HIT:
+                state = 'exploiting'
+                ship_core = next_shot
+                next_direction = (1,0)
+
+        elif state == 'exploiting':
+            next_shot, next_direction = select_next_valid_shot_and_direction(b, ship_core, next_direction)
+            try:
+                shots.remove(next_shot)  # remove 'searching-shot' if in list of shots to try
+            except ValueError:
+                pass
+            result = b.shoot(*next_shot)
+            if result == ShipPartState.HIT:
+                next_direction = step_direction(next_direction)
+            elif result == ShipPartState.MISS:
+                next_direction = select_next_direction(next_direction)
+            elif result == ShipPartState.SUNK:
+                state = 'exploring'
+
+        if b.fleet_sunk():
+            return move
+
 def select_next_valid_shot_and_direction(b, ship_core, next_direction):
     """For the current search, select the next valid shot.
 
@@ -144,14 +181,18 @@ if __name__ == "__main__":
 
     # play_1p_game(fleet)
 
+    min_shots = sum(fleet) if fleet else sum([5, 4,4, 3,3,3, 2,2,2,2])
+    print(f"\nA game with this fleet needs {min_shots} shots in a perfect game\n")
+
     strategies = {
         'random': simulate_random_strategy,
         'random with search': simulate_random_with_search_strategy,
+        'filtered random with search': simulate_filtered_random_with_search_strategy,
     }
 
     for name, strategy in strategies.items():
 
-        num_games = 1_000
+        num_games = 10_000
         durations = []
         for _ in range(num_games):
             try:
