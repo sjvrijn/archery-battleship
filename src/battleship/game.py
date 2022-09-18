@@ -5,7 +5,7 @@ from random import shuffle
 from typing import Sequence
 
 from battleship.board import Board
-from battleship.ship import ShipPartState
+from battleship.ship import ShipPartState, NONE_SHIP
 
 
 def play_1p_game(fleet: Sequence[int]):
@@ -49,28 +49,26 @@ def simulate_random_with_search_strategy(fleet: Sequence[int]) -> int:
 
     shots = list(product(range(b.size), range(b.size)))
     shuffle(shots)
-    # shots = set(shots)
 
     state = 'exploring'
 
     for move in count(1):
 
         if state == 'exploring':
-            r, c = shots.pop()
-            result = b.shoot(r,c)
+            next_shot = shots.pop()
+            result = b.shoot(*next_shot)
             if result == ShipPartState.HIT:
                 state = 'exploiting'
-                ship_core = r,c
+                ship_core = next_shot
                 next_direction = (1,0)
-                next_shot = r+1, c
 
         elif state == 'exploiting':
-            while next_shot not in shots:
-                next_shot, next_direction = select_next_shot(b, ship_core, next_direction)
-
+            next_shot, next_direction = select_next_valid_shot_and_direction(b, ship_core, next_direction)
             shots.remove(next_shot)
             result = b.shoot(*next_shot)
-            if result == ShipPartState.MISS:
+            if result == ShipPartState.HIT:
+                next_direction = step_direction(next_direction)
+            elif result == ShipPartState.MISS:
                 next_direction = select_next_direction(next_direction)
             elif result == ShipPartState.SUNK:
                 state = 'exploring'
@@ -78,18 +76,39 @@ def simulate_random_with_search_strategy(fleet: Sequence[int]) -> int:
         if b.fleet_sunk():
             return move
 
-def select_next_shot(board, ship_core, current_direction):
-    dr, dc = current_direction
+def select_next_valid_shot_and_direction(b, ship_core, next_direction):
+    """For the current search, select the next valid shot.
 
-    # construct next shot
-    r, c = ship_core[0]+dr, ship_core[1]+dc
+    By default this would be the next one in the current search direction,
+    but will turn to the next available direction if a previous MISS, HIT,
+    or the edge of the board is reached.
+    """
+    next_shot = calc_next_shot(ship_core, next_direction)
+    while not shot_is_valid(b, next_shot):
+        next_direction = select_next_direction(next_direction)
+        next_shot = calc_next_shot(ship_core, next_direction)
+    return next_shot, next_direction
 
-    # if shot falls out of board, move to next direction and reconstruct shot
-    while r < 0 or r >= board.size or c < 0 or c >= board.size:
-        (dr, dc) = select_next_direction((dr, dc))
-        r, c = ship_core[0]+dr, ship_core[1]+dc
+def calc_next_shot(ship_core, next_direction):
+    """Determine 'next_shot' as ship_core offset with next_direction"""
+    r, c = ship_core[0] + next_direction[0], ship_core[1] + next_direction[1]
+    return (r, c)
 
-    # Move forward in current direction
+def shot_is_valid(board, shot) -> bool:
+    """Check if a proposed shot is valid to try?"""
+    r, c = shot
+    # Does proposed shot fall outside of the board?
+    if r < 0 or r >= board.size or c < 0 or c >= board.size:
+        return False
+    # Has the target square not been shot at yet?
+    target = board.field[r][c][0].parts[board.field[r][c][1]]
+    if target not in [ShipPartState.NONE, ShipPartState.SAFE]:  # todo make black-box checkable?
+        return False
+    return True
+
+def step_direction(next_direction):
+    """Move 'next_direction' forward one step in its current direction"""
+    dr, dc = next_direction
     if dr > 0:
         dr += 1
     elif dr < 0:
@@ -98,8 +117,7 @@ def select_next_shot(board, ship_core, current_direction):
         dc += 1
     elif dc < 0:
         dc -= 1
-
-    return (r, c), (dr, dc)
+    return dr, dc
 
 def select_next_direction(direction: tuple[int]) -> tuple[int]:
     """Change direction in following order: (1,0) -> (0,1) -> (-1,0) -> (0,-1)"""
