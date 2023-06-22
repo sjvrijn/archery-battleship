@@ -83,10 +83,10 @@ class Board:
         if endcol >= self.size:
             endcol = self.size
 
-        for r, c in product(range(startrow, endrow), range(startcol, endcol)):
-            if self.field[r][c][0] is not NONE_SHIP:
-                return False
-        return True  # Placement is valid if no conflict was found
+        return all(
+            self.field[r][c][0] is NONE_SHIP
+            for r, c in product(range(startrow, endrow), range(startcol, endcol))
+        )
 
     def shoot(self, row: int, col: int) -> ShipPartState:
         """Shoot a location on the board and report the result"""

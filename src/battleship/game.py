@@ -139,9 +139,7 @@ def shot_is_valid(board, shot) -> bool:
         return False
     # Has the target square not been shot at yet?
     target = board.field[r][c][0].parts[board.field[r][c][1]]
-    if target not in [ShipPartState.NONE, ShipPartState.SAFE]:  # todo make black-box checkable?
-        return False
-    return True
+    return target in [ShipPartState.NONE, ShipPartState.SAFE]
 
 def step_direction(next_direction):
     """Move 'next_direction' forward one step in its current direction"""
@@ -173,8 +171,7 @@ def select_next_direction(direction: tuple[int]) -> tuple[int]:
 if __name__ == "__main__":
 
     print("what fleet should be used? (leave empty for default = [5, 4,4, 3,3,3, 2,2,2,2])")
-    fleet_str = input()
-    if fleet_str:
+    if fleet_str := input():
         fleet = list(map(int, fleet_str.strip('\n').split(',')))
     else:
         fleet = None
