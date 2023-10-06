@@ -9,9 +9,9 @@ from battleship.board import Board
 from battleship.ship import ShipPartState, NONE_SHIP
 
 
-def play_1p_game(fleet: Sequence[int]):
+def play_1p_game(fleet: Sequence[int], size: int=10):
     """Play a '1p' game: sink a randomly placed fleet in the fewest moves"""
-    b = Board()
+    b = Board(size=size)
     b.place_random_fleet(fleet)
 
     for move in count(1):
@@ -31,9 +31,9 @@ def play_1p_game(fleet: Sequence[int]):
             print(b.display(public=True))
             break
 
-def simulate_random_strategy(fleet: Sequence[int]) -> int:
+def simulate_random_strategy(fleet: Sequence[int], size: int=10) -> int:
     """Simulate a randomly played game: shoot all squared once in random order"""
-    b = Board()
+    b = Board(size=size)
     b.place_random_fleet(fleet)
 
     shots = list(product(range(b.size), range(b.size)))
@@ -43,9 +43,9 @@ def simulate_random_strategy(fleet: Sequence[int]) -> int:
         if b.fleet_sunk():
             return move
 
-def simulate_random_with_search_strategy(fleet: Sequence[int]) -> int:
+def simulate_random_with_search_strategy(fleet: Sequence[int], size: int=10) -> int:
     """Simulate a strategy of shooting randomly, but searching logically on a hit to sink a ship"""
-    b = Board()
+    b = Board(size=size)
     b.place_random_fleet(fleet)
 
     shots = list(product(range(b.size), range(b.size)))
@@ -77,9 +77,9 @@ def simulate_random_with_search_strategy(fleet: Sequence[int]) -> int:
         if b.fleet_sunk():
             return move
 
-def simulate_filtered_random_with_search_strategy(fleet: Sequence[int]) -> int:
+def simulate_filtered_random_with_search_strategy(fleet: Sequence[int], size: int=10) -> int:
     """Simulate a strategy of shooting randomly on diagonals, and searching logically on a hit to sink a ship"""
-    b = Board()
+    b = Board(size=size)
     b.place_random_fleet(fleet)
 
     shots = [(r,c) for r,c in product(range(b.size), range(b.size)) if (r+c)%2 == 1]
@@ -182,6 +182,8 @@ if __name__ == "__main__":
     parser = ArgumentParser()
     parser.add_argument('--games', type=int, default=10_000,
                         help="Number of games to simulate for. Default: 10_000")
+    parser.add_argument('--size', type=int, default=10,
+                        help="Size of the sides of the board in squares. Default: 10")
     args = parser.parse_args()
 
     min_shots = sum(fleet) if fleet else sum([5, 4,4, 3,3,3, 2,2,2,2])
@@ -200,7 +202,7 @@ if __name__ == "__main__":
         durations = []
         for _ in range(num_games):
             try:
-                num_moves = strategy(fleet)
+                num_moves = strategy(fleet, size=args.size)
             except ValueError:
                 num_games -= 1
                 continue
