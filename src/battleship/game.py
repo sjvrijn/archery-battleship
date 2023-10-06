@@ -172,22 +172,20 @@ def select_next_direction(direction: tuple[int]) -> tuple[int]:
 
 if __name__ == "__main__":
 
-    print("what fleet should be used? (leave empty for default = [5, 4,4, 3,3,3, 2,2,2,2])")
-    fleet_str = input()
-    if fleet_str:
-        fleet = list(map(int, fleet_str.strip('\n').split(',')))
-    else:
-        fleet = None
+    DEFAULT_FLEET = '5, 4,4, 3,3,3, 2,2,2,2'
 
     parser = ArgumentParser()
     parser.add_argument('--games', type=int, default=10_000,
                         help="Number of games to simulate for. Default: 10_000")
+    parser.add_argument('--fleet', default=DEFAULT_FLEET,
+                        help="Fleet of ships to sink, specified as a comma-separated list of integers.\n"
+                        f"Default: {DEFAULT_FLEET}")
     parser.add_argument('--size', type=int, default=10,
                         help="Size of the sides of the board in squares. Default: 10")
     args = parser.parse_args()
 
-    min_shots = sum(fleet) if fleet else sum([5, 4,4, 3,3,3, 2,2,2,2])
-    print(f"\nA game with this fleet needs {min_shots} shots in a perfect game\n")
+    fleet = list(map(int, args.fleet.split(',')))
+    print(f"\nTotal number of fleet squares to hit: {sum(fleet)}\n")
     print("Simulating...")
 
     strategies = {
