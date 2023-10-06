@@ -1,5 +1,6 @@
 """Play a game of Battleship"""
 
+from argparse import ArgumentParser
 from itertools import count, product
 from random import shuffle
 from typing import Sequence
@@ -178,7 +179,10 @@ if __name__ == "__main__":
     else:
         fleet = None
 
-    # play_1p_game(fleet)
+    parser = ArgumentParser()
+    parser.add_argument('--games', type=int, default=10_000,
+                        help="Number of games to simulate for. Default: 10_000")
+    args = parser.parse_args()
 
     min_shots = sum(fleet) if fleet else sum([5, 4,4, 3,3,3, 2,2,2,2])
     print(f"\nA game with this fleet needs {min_shots} shots in a perfect game\n")
@@ -192,7 +196,7 @@ if __name__ == "__main__":
 
     for name, strategy in strategies.items():
 
-        num_games = 10_000
+        num_games = args.games
         durations = []
         for _ in range(num_games):
             try:
