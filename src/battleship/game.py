@@ -77,13 +77,12 @@ def simulate_random_with_search_strategy(fleet: Sequence[int]) -> int:
             return move
 
 def simulate_filtered_random_with_search_strategy(fleet: Sequence[int]) -> int:
-    """Simulate a strategy of shooting randomly, but searching logically on a hit to sink a ship"""
+    """Simulate a strategy of shooting randomly on diagonals, and searching logically on a hit to sink a ship"""
     b = Board()
     b.place_random_fleet(fleet)
 
     shots = [(r,c) for r,c in product(range(b.size), range(b.size)) if (r+c)%2 == 1]
     shuffle(shots)
-
     state = 'exploring'
 
     for move in count(1):
@@ -183,6 +182,7 @@ if __name__ == "__main__":
 
     min_shots = sum(fleet) if fleet else sum([5, 4,4, 3,3,3, 2,2,2,2])
     print(f"\nA game with this fleet needs {min_shots} shots in a perfect game\n")
+    print("Simulating...")
 
     strategies = {
         'random': simulate_random_strategy,
